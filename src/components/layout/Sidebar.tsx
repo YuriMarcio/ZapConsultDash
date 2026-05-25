@@ -11,13 +11,20 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const NAV = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  badge?: number;
+};
+
+const NAV: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/conversas", label: "Conversas", icon: MessageCircle, badge: 3 },
   { to: "/pedidos", label: "Pedidos", icon: ClipboardList, badge: 4 },
   { to: "/financeiro", label: "Financeiro", icon: Wallet },
   { to: "/produtos", label: "Produtos", icon: UtensilsCrossed },
-] as const;
+];
 
 const CONFIG = [
   { to: "/automacao", label: "Automação", icon: Zap },
