@@ -2,53 +2,82 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusPill } from "@/components/ui/StatusPill";
-import { PRODUCTS } from "@/lib/mock-data";
-import { Plus, Search, Edit3, ImagePlus } from "lucide-react";
+import { PRODUCTS, type Product } from "@/lib/mock-data";
+import { Plus, Search, Edit3, ImagePlus, X, Upload } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({ meta: [{ title: "Produtos — Sinal" }] }),
   component: ProdutosPage,
 });
 
-function ProdutosPage() {
-  const categories = ["Todos", ...Array.from(new Set(PRODUCTS.map((p) => p.category)))];
-  const [filter, setFilter] = useState("Todos");
+const DEFAULT_CATEGORIES = ["Lanches", "Combos", "Pizzas", "Marmitas", "Bebidas", "Sobremesas"];
 
-  const items = PRODUCTS.filter((p) => filter === "Todos" || p.category === filter);
+function ProdutosPage() {
+  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+  const categories = ["Todos", ...Array.from(new Set(products.map((p) => p.category)))];
+  const [filter, setFilter] = useState("Todos");
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const items = products.filter(
+    (p) =>
+      (filter === "Todos" || p.category === filter) &&
+      (search === "" || p.name.toLowerCase().includes(search.toLowerCase())),
+  );
+
+  const handleCreate = (p: Product) => {
+    setProducts((prev) => [p, ...prev]);
+    setOpen(false);
+  };
 
   return (
     <AppLayout title="Produtos">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-accent mb-2">
             Cardápio
           </p>
-          <h1 className="text-2xl font-bold tracking-tight">Produtos & Estoque</h1>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Produtos & Estoque</h1>
         </div>
-        <button className="px-3 py-2 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground rounded flex items-center gap-2 hover:opacity-90">
+        <button
+          onClick={() => setOpen(true)}
+          className="px-3 py-2 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground rounded flex items-center justify-center gap-2 hover:opacity-90 w-full sm:w-auto"
+        >
           <Plus className="size-3.5" /> Novo produto
         </button>
       </div>
 
-      <div className="flex items-center justify-between gap-3 mb-6">
-        <div className="flex gap-1 overflow-x-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div className="flex gap-1 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
           {categories.map((c) => (
             <button
               key={c}
               onClick={() => setFilter(c)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${filter === c
-                ? "bg-primary text-primary-foreground"
-                : "bg-card border border-border text-muted-foreground hover:bg-muted"}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors whitespace-nowrap shrink-0 ${
+                filter === c
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card border border-border text-muted-foreground hover:bg-muted"
+              }`}
             >
               {c}
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded">
-          <Search className="size-3.5 text-muted-foreground" />
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded w-full sm:w-auto">
+          <Search className="size-3.5 text-muted-foreground shrink-0" />
           <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar produto..."
-            className="bg-transparent text-xs outline-none w-48"
+            className="bg-transparent text-xs outline-none w-full sm:w-48"
           />
         </div>
       </div>
@@ -63,7 +92,13 @@ function ProdutosPage() {
             <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/40 flex items-center justify-center relative">
               <ImagePlus className="size-8 text-muted-foreground/50" />
               <div className="absolute top-2 left-2">
-                {p.active ? <StatusPill tone="success" dot>Ativo</StatusPill> : <StatusPill tone="muted">Inativo</StatusPill>}
+                {p.active ? (
+                  <StatusPill tone="success" dot>
+                    Ativo
+                  </StatusPill>
+                ) : (
+                  <StatusPill tone="muted">Inativo</StatusPill>
+                )}
               </div>
               <button className="absolute top-2 right-2 size-7 rounded bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <Edit3 className="size-3.5" />
@@ -79,14 +114,22 @@ function ProdutosPage() {
               </p>
               <div className="flex items-end justify-between pt-3 border-t border-border">
                 <div>
-                  <div className="text-[10px] uppercase text-muted-foreground tracking-wider">Preço</div>
+                  <div className="text-[10px] uppercase text-muted-foreground tracking-wider">
+                    Preço
+                  </div>
                   <div className="text-base font-bold font-mono">
                     R$ {p.price.toFixed(2).replace(".", ",")}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[10px] uppercase text-muted-foreground tracking-wider">Estoque</div>
-                  <div className={`text-base font-bold font-mono ${p.stock === 0 ? "text-rose-500" : p.stock < 10 ? "text-amber-500" : ""}`}>
+                  <div className="text-[10px] uppercase text-muted-foreground tracking-wider">
+                    Estoque
+                  </div>
+                  <div
+                    className={`text-base font-bold font-mono ${
+                      p.stock === 0 ? "text-rose-500" : p.stock < 10 ? "text-amber-500" : ""
+                    }`}
+                  >
                     {p.stock}
                   </div>
                 </div>
@@ -95,6 +138,200 @@ function ProdutosPage() {
           </div>
         ))}
       </div>
+
+      <NovoProdutoDialog open={open} onOpenChange={setOpen} onCreate={handleCreate} />
     </AppLayout>
+  );
+}
+
+function NovoProdutoDialog({
+  open,
+  onOpenChange,
+  onCreate,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  onCreate: (p: Product) => void;
+}) {
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState(DEFAULT_CATEGORIES[0]);
+  const [price, setPrice] = useState("");
+  const [stock, setStock] = useState("");
+  const [description, setDescription] = useState("");
+  const [active, setActive] = useState(true);
+
+  const reset = () => {
+    setName("");
+    setCategory(DEFAULT_CATEGORIES[0]);
+    setPrice("");
+    setStock("");
+    setDescription("");
+    setActive(true);
+  };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !price) return;
+    onCreate({
+      id: `p${Date.now()}`,
+      name: name.trim(),
+      category,
+      price: parseFloat(price.replace(",", ".")) || 0,
+      stock: parseInt(stock) || 0,
+      active,
+      description: description.trim(),
+    });
+    reset();
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        onOpenChange(v);
+        if (!v) reset();
+      }}
+    >
+      <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto p-0 gap-0">
+        <DialogHeader className="px-5 sm:px-6 pt-6 pb-4 border-b border-border">
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-accent mb-1">
+            Cardápio
+          </p>
+          <DialogTitle className="text-xl font-bold tracking-tight">Novo produto</DialogTitle>
+          <DialogDescription className="text-xs">
+            Adicione um item ao seu cardápio. Ele ficará disponível no atendimento via WhatsApp.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={submit} className="px-5 sm:px-6 py-5 space-y-5">
+          {/* Upload image */}
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
+              Foto do produto
+            </label>
+            <button
+              type="button"
+              className="w-full aspect-[16/7] sm:aspect-[16/5] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-muted/50 hover:border-accent/50 transition-colors text-muted-foreground"
+            >
+              <Upload className="size-5" />
+              <span className="text-xs font-semibold">Clique para enviar imagem</span>
+              <span className="text-[10px]">PNG, JPG até 5MB · 4:3 recomendado</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
+                Nome do produto *
+              </label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ex: X-Bacon Especial"
+                required
+                className="w-full px-3 py-2 bg-card border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
+                Categoria *
+              </label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-3 py-2 bg-card border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition"
+              >
+                {DEFAULT_CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
+                Preço (R$) *
+              </label>
+              <input
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="0,00"
+                inputMode="decimal"
+                required
+                className="w-full px-3 py-2 bg-card border border-border rounded text-sm font-mono outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
+                Estoque inicial
+              </label>
+              <input
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+                placeholder="0"
+                inputMode="numeric"
+                className="w-full px-3 py-2 bg-card border border-border rounded text-sm font-mono outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition"
+              />
+            </div>
+
+            <div className="flex items-end">
+              <label className="flex items-center gap-3 px-3 py-2 bg-card border border-border rounded w-full cursor-pointer hover:bg-muted/50 transition">
+                <button
+                  type="button"
+                  onClick={() => setActive(!active)}
+                  className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${
+                    active ? "bg-emerald-500" : "bg-muted-foreground/30"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 size-4 bg-white rounded-full shadow transition-transform ${
+                      active ? "translate-x-4" : "translate-x-0.5"
+                    }`}
+                  />
+                </button>
+                <div className="flex-1">
+                  <div className="text-xs font-semibold">{active ? "Ativo" : "Inativo"}</div>
+                  <div className="text-[10px] text-muted-foreground">
+                    {active ? "Visível no cardápio" : "Oculto no WhatsApp"}
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
+                Descrição
+              </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Ingredientes, modo de preparo, observações…"
+                rows={3}
+                className="w-full px-3 py-2 bg-card border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition resize-none"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2 border-t border-border -mx-5 sm:-mx-6 px-5 sm:px-6 pt-5">
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="px-4 py-2 text-xs font-bold uppercase tracking-widest border border-border rounded hover:bg-muted transition flex items-center justify-center gap-2"
+            >
+              <X className="size-3.5" /> Cancelar
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground rounded hover:opacity-90 transition flex items-center justify-center gap-2"
+            >
+              <Plus className="size-3.5" /> Salvar produto
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
