@@ -243,7 +243,7 @@ function NovoProdutoDialog({
         if (!v) reset();
       }}
     >
-      <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto p-0 gap-0">
+      <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto p-0 gap-0">
         <DialogHeader className="px-5 sm:px-6 pt-6 pb-4 border-b border-border">
           <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-accent mb-1">
             Cardápio
@@ -254,7 +254,8 @@ function NovoProdutoDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={submit} className="px-5 sm:px-6 py-5 space-y-5">
+        <div className="grid lg:grid-cols-[1fr_320px]">
+        <form onSubmit={submit} className="px-5 sm:px-6 py-5 space-y-5 order-2 lg:order-1">
           {/* Upload image */}
           <div>
             <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
