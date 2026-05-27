@@ -31,11 +31,11 @@ const CONFIG = [
   { to: "/ajustes", label: "Ajustes", icon: Settings },
 ] as const;
 
-export function Sidebar() {
+export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <aside className="w-[240px] border-r border-border bg-sidebar flex flex-col shrink-0 h-screen sticky top-0">
+    <aside className="w-[240px] border-r border-border bg-sidebar flex flex-col shrink-0 h-screen lg:sticky lg:top-0">
       <div className="h-16 flex items-center px-6 border-b border-border">
         <div className="size-7 bg-primary rounded-sm flex items-center justify-center mr-3">
           <div className="w-2.5 h-2.5 bg-primary-foreground" />
