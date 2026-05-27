@@ -383,6 +383,26 @@ function NovoProdutoDialog({
             </button>
           </DialogFooter>
         </form>
+
+        {/* Live WhatsApp preview */}
+        <aside className="order-1 lg:order-2 bg-muted/40 border-b lg:border-b-0 lg:border-l border-border p-5 sm:p-6 flex flex-col gap-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-600 mb-1 flex items-center gap-1.5">
+              <Smartphone className="size-3" /> Preview do WhatsApp
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              Como o cliente vai visualizar este produto no chat.
+            </p>
+          </div>
+          <div className="flex-1 flex items-center justify-center rounded-xl py-6 px-3 bg-[#e5ddd5] dark:bg-[#0b141a] ring-1 ring-black/10">
+            <WhatsappProductPreview
+              name={name}
+              price={parseFloat(price.replace(",", ".")) || 0}
+              description={description}
+            />
+          </div>
+        </aside>
+        </div>
       </DialogContent>
     </Dialog>
   );
