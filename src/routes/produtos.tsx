@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { PRODUCTS, type Product } from "@/lib/mock-data";
-import { Plus, Search, Edit3, ImagePlus, X, Upload } from "lucide-react";
+import { Plus, Search, Edit3, ImagePlus, X, Upload, Eye, Smartphone } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { WhatsappProductPreview } from "@/components/ui/WhatsappProductPreview";
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({ meta: [{ title: "Produtos — Sinal" }] }),
