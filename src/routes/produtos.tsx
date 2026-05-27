@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { PRODUCTS, type Product } from "@/lib/mock-data";
-import { Plus, Search, Edit3, ImagePlus, X, Upload, Eye, Smartphone } from "lucide-react";
+import { Plus, Search, Edit3, ImagePlus, X, Upload, Smartphone } from "lucide-react";
 import {
   Dialog,
   DialogContent,
