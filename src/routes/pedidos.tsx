@@ -28,23 +28,23 @@ function PedidosPage() {
 
   return (
     <AppLayout title="Pedidos">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-accent mb-2">
             Operação
           </p>
-          <h1 className="text-2xl font-bold tracking-tight">Quadro de Pedidos</h1>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Quadro de Pedidos</h1>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded">
-            <Search className="size-3.5 text-muted-foreground" />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded flex-1 sm:flex-none min-w-0">
+            <Search className="size-3.5 text-muted-foreground shrink-0" />
             <input
               placeholder="Buscar pedido..."
-              className="bg-transparent text-xs outline-none w-48"
+              className="bg-transparent text-xs outline-none w-full sm:w-48"
             />
           </div>
           <button className="px-3 py-1.5 text-xs font-semibold border border-border rounded bg-card flex items-center gap-2 hover:bg-muted">
-            <Filter className="size-3.5" /> Filtros
+            <Filter className="size-3.5" /> <span className="hidden sm:inline">Filtros</span>
           </button>
           <button className="px-3 py-1.5 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground rounded flex items-center gap-2 hover:opacity-90">
             <Bell className="size-3.5" /> Sons ON
