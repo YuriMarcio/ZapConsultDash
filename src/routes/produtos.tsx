@@ -27,6 +27,7 @@ function ProdutosPage() {
   const [filter, setFilter] = useState("Todos");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
 
   const items = products.filter(
     (p) =>
@@ -101,9 +102,21 @@ function ProdutosPage() {
                   <StatusPill tone="muted">Inativo</StatusPill>
                 )}
               </div>
-              <button className="absolute top-2 right-2 size-7 rounded bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Edit3 className="size-3.5" />
-              </button>
+              <div className="absolute top-2 right-2 flex gap-1.5">
+                <button
+                  onClick={() => setPreviewProduct(p)}
+                  title="Ver no WhatsApp"
+                  className="size-7 rounded bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-emerald-500 hover:text-white"
+                >
+                  <Smartphone className="size-3.5" />
+                </button>
+                <button
+                  title="Editar"
+                  className="size-7 rounded bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Edit3 className="size-3.5" />
+                </button>
+              </div>
             </div>
             <div className="p-4">
               <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
@@ -141,7 +154,44 @@ function ProdutosPage() {
       </div>
 
       <NovoProdutoDialog open={open} onOpenChange={setOpen} onCreate={handleCreate} />
+      <WhatsappPreviewDialog
+        product={previewProduct}
+        onClose={() => setPreviewProduct(null)}
+      />
     </AppLayout>
+  );
+}
+
+function WhatsappPreviewDialog({
+  product,
+  onClose,
+}: {
+  product: Product | null;
+  onClose: () => void;
+}) {
+  return (
+    <Dialog open={!!product} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-md p-0 gap-0 bg-card">
+        <DialogHeader className="px-5 pt-5 pb-3 border-b border-border">
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-600 mb-1 flex items-center gap-1.5">
+            <Smartphone className="size-3" /> Pré-visualização WhatsApp
+          </p>
+          <DialogTitle className="text-base font-bold">Como o cliente vai ver</DialogTitle>
+          <DialogDescription className="text-xs">
+            Esta é uma simulação fiel do card enviado no chat do WhatsApp.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="p-6 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22><circle cx=%221%22 cy=%221%22 r=%221%22 fill=%22%23d4cdbf%22 opacity=%220.3%22/></svg>')] bg-[#e5ddd5] dark:bg-[#0b141a] flex items-center justify-center">
+          {product && (
+            <WhatsappProductPreview
+              name={product.name}
+              price={product.price}
+              description={product.description}
+            />
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
