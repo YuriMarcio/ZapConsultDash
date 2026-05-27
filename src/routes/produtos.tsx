@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { PRODUCTS, type Product } from "@/lib/mock-data";
-import { Plus, Search, Edit3, ImagePlus, X, Upload } from "lucide-react";
+import { Plus, Search, Edit3, ImagePlus, X, Upload, Smartphone } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { WhatsappProductPreview } from "@/components/ui/WhatsappProductPreview";
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({ meta: [{ title: "Produtos — Sinal" }] }),
@@ -26,6 +27,7 @@ function ProdutosPage() {
   const [filter, setFilter] = useState("Todos");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
 
   const items = products.filter(
     (p) =>
@@ -100,9 +102,21 @@ function ProdutosPage() {
                   <StatusPill tone="muted">Inativo</StatusPill>
                 )}
               </div>
-              <button className="absolute top-2 right-2 size-7 rounded bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Edit3 className="size-3.5" />
-              </button>
+              <div className="absolute top-2 right-2 flex gap-1.5">
+                <button
+                  onClick={() => setPreviewProduct(p)}
+                  title="Ver no WhatsApp"
+                  className="size-7 rounded bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-emerald-500 hover:text-white"
+                >
+                  <Smartphone className="size-3.5" />
+                </button>
+                <button
+                  title="Editar"
+                  className="size-7 rounded bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Edit3 className="size-3.5" />
+                </button>
+              </div>
             </div>
             <div className="p-4">
               <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
@@ -140,7 +154,44 @@ function ProdutosPage() {
       </div>
 
       <NovoProdutoDialog open={open} onOpenChange={setOpen} onCreate={handleCreate} />
+      <WhatsappPreviewDialog
+        product={previewProduct}
+        onClose={() => setPreviewProduct(null)}
+      />
     </AppLayout>
+  );
+}
+
+function WhatsappPreviewDialog({
+  product,
+  onClose,
+}: {
+  product: Product | null;
+  onClose: () => void;
+}) {
+  return (
+    <Dialog open={!!product} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-md p-0 gap-0 bg-card">
+        <DialogHeader className="px-5 pt-5 pb-3 border-b border-border">
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-600 mb-1 flex items-center gap-1.5">
+            <Smartphone className="size-3" /> Pré-visualização WhatsApp
+          </p>
+          <DialogTitle className="text-base font-bold">Como o cliente vai ver</DialogTitle>
+          <DialogDescription className="text-xs">
+            Esta é uma simulação fiel do card enviado no chat do WhatsApp.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="p-6 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22><circle cx=%221%22 cy=%221%22 r=%221%22 fill=%22%23d4cdbf%22 opacity=%220.3%22/></svg>')] bg-[#e5ddd5] dark:bg-[#0b141a] flex items-center justify-center">
+          {product && (
+            <WhatsappProductPreview
+              name={product.name}
+              price={product.price}
+              description={product.description}
+            />
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -192,7 +243,7 @@ function NovoProdutoDialog({
         if (!v) reset();
       }}
     >
-      <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto p-0 gap-0">
+      <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto p-0 gap-0">
         <DialogHeader className="px-5 sm:px-6 pt-6 pb-4 border-b border-border">
           <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-accent mb-1">
             Cardápio
@@ -203,7 +254,8 @@ function NovoProdutoDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={submit} className="px-5 sm:px-6 py-5 space-y-5">
+        <div className="grid lg:grid-cols-[1fr_320px]">
+        <form onSubmit={submit} className="px-5 sm:px-6 py-5 space-y-5 order-2 lg:order-1">
           {/* Upload image */}
           <div>
             <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
@@ -331,6 +383,26 @@ function NovoProdutoDialog({
             </button>
           </DialogFooter>
         </form>
+
+        {/* Live WhatsApp preview */}
+        <aside className="order-1 lg:order-2 bg-muted/40 border-b lg:border-b-0 lg:border-l border-border p-5 sm:p-6 flex flex-col gap-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-600 mb-1 flex items-center gap-1.5">
+              <Smartphone className="size-3" /> Preview do WhatsApp
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              Como o cliente vai visualizar este produto no chat.
+            </p>
+          </div>
+          <div className="flex-1 flex items-center justify-center rounded-xl py-6 px-3 bg-[#e5ddd5] dark:bg-[#0b141a] ring-1 ring-black/10">
+            <WhatsappProductPreview
+              name={name}
+              price={parseFloat(price.replace(",", ".")) || 0}
+              description={description}
+            />
+          </div>
+        </aside>
+        </div>
       </DialogContent>
     </Dialog>
   );
