@@ -129,3 +129,144 @@ export const AUTOMATIONS = [
   { id: "a5", title: "Pedido entregue", enabled: false, body: "Pedido entregue! Esperamos que aproveite, {{nome}}. ⭐ Avalie nosso atendimento." },
   { id: "a6", title: "Mensagem de ausência", enabled: false, body: "Estamos com alto volume agora. Em breve um atendente responde 🙏" },
 ];
+
+export type PromotionType = "percent" | "fixed" | "combo";
+export interface Promotion {
+  id: string;
+  name: string;
+  productId: string;
+  productName: string;
+  type: PromotionType;
+  discount: number; // % ou R$
+  promoPrice: number;
+  originalPrice: number;
+  startDate: string; // ISO
+  endDate: string; // ISO
+  active: boolean;
+  description?: string;
+}
+
+export const PROMOTIONS: Promotion[] = [
+  {
+    id: "pr1",
+    name: "Sexta do Bacon",
+    productId: "p1",
+    productName: "X-Bacon Especial",
+    type: "percent",
+    discount: 20,
+    originalPrice: 32.9,
+    promoPrice: 26.32,
+    startDate: "2026-06-12",
+    endDate: "2026-06-30",
+    active: true,
+    description: "20% OFF em todo X-Bacon nas sextas-feiras",
+  },
+  {
+    id: "pr2",
+    name: "Combo Família R$ 159",
+    productId: "p2",
+    productName: "Combo Burguer Duplo",
+    type: "fixed",
+    discount: 10,
+    originalPrice: 49.9,
+    promoPrice: 39.9,
+    startDate: "2026-06-01",
+    endDate: "2026-06-20",
+    active: true,
+  },
+  {
+    id: "pr3",
+    name: "Pizza da Casa",
+    productId: "p3",
+    productName: "Pizza Calabresa G",
+    type: "percent",
+    discount: 15,
+    originalPrice: 68,
+    promoPrice: 57.8,
+    startDate: "2026-05-20",
+    endDate: "2026-06-05",
+    active: false,
+  },
+];
+
+export interface CampaignPlan {
+  id: string;
+  name: string;
+  price: number;
+  duration: string;
+  reachMin: number;
+  reachMax: number;
+  clicksEstimate: string;
+  features: string[];
+  highlighted?: boolean;
+}
+
+export const CAMPAIGN_PLANS: CampaignPlan[] = [
+  {
+    id: "starter",
+    name: "Bairro",
+    price: 49.9,
+    duration: "3 dias",
+    reachMin: 1500,
+    reachMax: 3000,
+    clicksEstimate: "80 – 160",
+    features: [
+      "Raio de até 2 km",
+      "Anúncio no Instagram + Facebook",
+      "1 criativo (foto ou vídeo)",
+      "Relatório básico de desempenho",
+    ],
+  },
+  {
+    id: "boost",
+    name: "Cidade",
+    price: 129.9,
+    duration: "7 dias",
+    reachMin: 6000,
+    reachMax: 12000,
+    clicksEstimate: "320 – 640",
+    highlighted: true,
+    features: [
+      "Raio de até 8 km",
+      "Instagram + Facebook + Stories",
+      "Até 3 criativos com rotação",
+      "Botão direto para WhatsApp",
+      "Relatório completo + otimização IA",
+    ],
+  },
+  {
+    id: "pro",
+    name: "Região Metro",
+    price: 299.9,
+    duration: "14 dias",
+    reachMin: 18000,
+    reachMax: 35000,
+    clicksEstimate: "950 – 1.800",
+    features: [
+      "Raio de até 20 km",
+      "Todos os formatos da Meta",
+      "Até 6 criativos + testes A/B",
+      "Públicos semelhantes (lookalike)",
+      "Gerente de campanha dedicado",
+    ],
+  },
+];
+
+export interface Campaign {
+  id: string;
+  title: string;
+  planId: string;
+  status: "ativa" | "agendada" | "pausada" | "encerrada" | "rascunho";
+  spend: number;
+  reach: number;
+  clicks: number;
+  startDate: string;
+  endDate: string;
+  area: string;
+}
+
+export const CAMPAIGNS: Campaign[] = [
+  { id: "cp1", title: "Promo X-Bacon · Vila Madalena", planId: "boost", status: "ativa", spend: 78.4, reach: 8420, clicks: 412, startDate: "2026-06-10", endDate: "2026-06-17", area: "Vila Madalena · 5km" },
+  { id: "cp2", title: "Pizza Sexta · Pinheiros", planId: "starter", status: "agendada", spend: 0, reach: 0, clicks: 0, startDate: "2026-06-15", endDate: "2026-06-18", area: "Pinheiros · 2km" },
+  { id: "cp3", title: "Marmita Fit · Zona Oeste", planId: "pro", status: "encerrada", spend: 299.9, reach: 28310, clicks: 1402, startDate: "2026-05-20", endDate: "2026-06-03", area: "Zona Oeste · 15km" },
+];

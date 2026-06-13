@@ -5,6 +5,8 @@ import {
   ClipboardList,
   Wallet,
   UtensilsCrossed,
+  Tag,
+  Megaphone,
   Zap,
   Settings,
   LogOut,
@@ -24,6 +26,8 @@ const NAV: NavItem[] = [
   { to: "/pedidos", label: "Pedidos", icon: ClipboardList, badge: 4 },
   { to: "/financeiro", label: "Financeiro", icon: Wallet },
   { to: "/produtos", label: "Produtos", icon: UtensilsCrossed },
+  { to: "/promocoes", label: "Promoções", icon: Tag },
+  { to: "/marketing", label: "Marketing", icon: Megaphone },
 ];
 
 const CONFIG = [

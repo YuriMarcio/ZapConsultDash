@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RecuperarRouteImport } from './routes/recuperar'
+import { Route as PromocoesRouteImport } from './routes/promocoes'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as PedidosRouteImport } from './routes/pedidos'
+import { Route as MarketingRouteImport } from './routes/marketing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -26,6 +28,11 @@ const RecuperarRoute = RecuperarRouteImport.update({
   path: '/recuperar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PromocoesRoute = PromocoesRouteImport.update({
+  id: '/promocoes',
+  path: '/promocoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -34,6 +41,11 @@ const ProdutosRoute = ProdutosRouteImport.update({
 const PedidosRoute = PedidosRouteImport.update({
   id: '/pedidos',
   path: '/pedidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketingRoute = MarketingRouteImport.update({
+  id: '/marketing',
+  path: '/marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -86,8 +98,10 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/financeiro': typeof FinanceiroRoute
   '/login': typeof LoginRoute
+  '/marketing': typeof MarketingRoute
   '/pedidos': typeof PedidosRoute
   '/produtos': typeof ProdutosRoute
+  '/promocoes': typeof PromocoesRoute
   '/recuperar': typeof RecuperarRoute
 }
 export interface FileRoutesByTo {
@@ -99,8 +113,10 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/financeiro': typeof FinanceiroRoute
   '/login': typeof LoginRoute
+  '/marketing': typeof MarketingRoute
   '/pedidos': typeof PedidosRoute
   '/produtos': typeof ProdutosRoute
+  '/promocoes': typeof PromocoesRoute
   '/recuperar': typeof RecuperarRoute
 }
 export interface FileRoutesById {
@@ -113,8 +129,10 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/financeiro': typeof FinanceiroRoute
   '/login': typeof LoginRoute
+  '/marketing': typeof MarketingRoute
   '/pedidos': typeof PedidosRoute
   '/produtos': typeof ProdutosRoute
+  '/promocoes': typeof PromocoesRoute
   '/recuperar': typeof RecuperarRoute
 }
 export interface FileRouteTypes {
@@ -128,8 +146,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/financeiro'
     | '/login'
+    | '/marketing'
     | '/pedidos'
     | '/produtos'
+    | '/promocoes'
     | '/recuperar'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -141,8 +161,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/financeiro'
     | '/login'
+    | '/marketing'
     | '/pedidos'
     | '/produtos'
+    | '/promocoes'
     | '/recuperar'
   id:
     | '__root__'
@@ -154,8 +176,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/financeiro'
     | '/login'
+    | '/marketing'
     | '/pedidos'
     | '/produtos'
+    | '/promocoes'
     | '/recuperar'
   fileRoutesById: FileRoutesById
 }
@@ -168,8 +192,10 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   FinanceiroRoute: typeof FinanceiroRoute
   LoginRoute: typeof LoginRoute
+  MarketingRoute: typeof MarketingRoute
   PedidosRoute: typeof PedidosRoute
   ProdutosRoute: typeof ProdutosRoute
+  PromocoesRoute: typeof PromocoesRoute
   RecuperarRoute: typeof RecuperarRoute
 }
 
@@ -180,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/recuperar'
       fullPath: '/recuperar'
       preLoaderRoute: typeof RecuperarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/promocoes': {
+      id: '/promocoes'
+      path: '/promocoes'
+      fullPath: '/promocoes'
+      preLoaderRoute: typeof PromocoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produtos': {
@@ -194,6 +227,13 @@ declare module '@tanstack/react-router' {
       path: '/pedidos'
       fullPath: '/pedidos'
       preLoaderRoute: typeof PedidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketing': {
+      id: '/marketing'
+      path: '/marketing'
+      fullPath: '/marketing'
+      preLoaderRoute: typeof MarketingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -264,20 +304,12 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   FinanceiroRoute: FinanceiroRoute,
   LoginRoute: LoginRoute,
+  MarketingRoute: MarketingRoute,
   PedidosRoute: PedidosRoute,
   ProdutosRoute: ProdutosRoute,
+  PromocoesRoute: PromocoesRoute,
   RecuperarRoute: RecuperarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
