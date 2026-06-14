@@ -1,4 +1,23 @@
 export type OrderStatus = "novo" | "preparo" | "entrega" | "finalizado" | "cancelado";
+export type OrderSource = "whatsapp" | "ifood" | "rappi" | "ubereats" | "99food" | "cardapio";
+
+export interface SourceMeta {
+  id: OrderSource;
+  label: string;
+  short: string;
+  color: string; // bg
+  text: string; // text color
+  ring: string; // border
+}
+
+export const SOURCE_META: Record<OrderSource, SourceMeta> = {
+  whatsapp: { id: "whatsapp", label: "WhatsApp", short: "WA", color: "bg-emerald-500", text: "text-white", ring: "ring-emerald-500/30" },
+  ifood: { id: "ifood", label: "iFood", short: "iF", color: "bg-red-600", text: "text-white", ring: "ring-red-500/30" },
+  rappi: { id: "rappi", label: "Rappi", short: "Ra", color: "bg-orange-500", text: "text-white", ring: "ring-orange-500/30" },
+  ubereats: { id: "ubereats", label: "Uber Eats", short: "UE", color: "bg-neutral-900", text: "text-white", ring: "ring-neutral-700/40" },
+  "99food": { id: "99food", label: "99 Food", short: "99", color: "bg-yellow-400", text: "text-black", ring: "ring-yellow-400/40" },
+  cardapio: { id: "cardapio", label: "Cardápio digital", short: "CD", color: "bg-sky-500", text: "text-white", ring: "ring-sky-500/30" },
+};
 
 export interface Order {
   id: string;
@@ -11,18 +30,22 @@ export interface Order {
   time: string;
   notes?: string;
   status: OrderStatus;
+  source: OrderSource;
 }
 
 export const ORDERS: Order[] = [
-  { id: "WH-10293", customer: "Ana Clara", phone: "+55 11 99312-1100", items: ["2× Combo Burguer Duplo", "1× Refri 2L"], total: 142.5, payment: "Pix", paymentStatus: "Aprovado", time: "14:31", notes: "Sem cebola", status: "novo" },
-  { id: "WH-10292", customer: "Bruno Santos", phone: "+55 11 98122-3344", items: ["1× Pizza Calabresa G"], total: 68, payment: "Cartão", paymentStatus: "Aprovado", time: "14:18", status: "preparo" },
-  { id: "WH-10291", customer: "Carla Oliveira", phone: "+55 11 97700-2210", items: ["1× Marmita Fitness", "1× Suco Verde"], total: 39.9, payment: "Pix", paymentStatus: "Aprovado", time: "13:58", status: "entrega" },
-  { id: "WH-10290", customer: "Diego Lima", phone: "+55 11 96604-1010", items: ["1× X-Bacon", "1× Batata G"], total: 45.9, payment: "Dinheiro", paymentStatus: "Pendente", time: "13:41", notes: "Troco para R$ 50", status: "novo" },
-  { id: "WH-10289", customer: "Eduarda Reis", phone: "+55 11 99988-7766", items: ["3× Esfiha Carne", "1× Coca Lata"], total: 32.4, payment: "Pix", paymentStatus: "Aprovado", time: "13:22", status: "preparo" },
-  { id: "WH-10288", customer: "Felipe Costa", phone: "+55 11 91122-3300", items: ["1× Combo Família"], total: 189.9, payment: "Cartão", paymentStatus: "Aprovado", time: "12:55", status: "finalizado" },
-  { id: "WH-10287", customer: "Gisele Martins", phone: "+55 11 98800-1144", items: ["1× Salada Caesar"], total: 28, payment: "Pix", paymentStatus: "Aprovado", time: "12:40", status: "finalizado" },
-  { id: "WH-10286", customer: "Henrique Alves", phone: "+55 11 97700-5566", items: ["2× Marmita Tradicional"], total: 51.8, payment: "Pix", paymentStatus: "Estornado", time: "12:12", status: "cancelado" },
-  { id: "WH-10285", customer: "Isabela Rocha", phone: "+55 11 96655-8899", items: ["1× Pizza Quatro Queijos"], total: 79, payment: "Cartão", paymentStatus: "Aprovado", time: "11:58", status: "entrega" },
+  { id: "WH-10293", customer: "Ana Clara", phone: "+55 11 99312-1100", items: ["2× Combo Burguer Duplo", "1× Refri 2L"], total: 142.5, payment: "Pix", paymentStatus: "Aprovado", time: "14:31", notes: "Sem cebola", status: "novo", source: "whatsapp" },
+  { id: "IF-88421", customer: "Bruno Santos", phone: "+55 11 98122-3344", items: ["1× Pizza Calabresa G"], total: 68, payment: "Cartão", paymentStatus: "Aprovado", time: "14:18", status: "preparo", source: "ifood" },
+  { id: "RA-55120", customer: "Carla Oliveira", phone: "+55 11 97700-2210", items: ["1× Marmita Fitness", "1× Suco Verde"], total: 39.9, payment: "Pix", paymentStatus: "Aprovado", time: "13:58", status: "entrega", source: "rappi" },
+  { id: "WH-10290", customer: "Diego Lima", phone: "+55 11 96604-1010", items: ["1× X-Bacon", "1× Batata G"], total: 45.9, payment: "Dinheiro", paymentStatus: "Pendente", time: "13:41", notes: "Troco para R$ 50", status: "novo", source: "whatsapp" },
+  { id: "UE-30912", customer: "Eduarda Reis", phone: "+55 11 99988-7766", items: ["3× Esfiha Carne", "1× Coca Lata"], total: 32.4, payment: "Cartão", paymentStatus: "Aprovado", time: "13:22", status: "preparo", source: "ubereats" },
+  { id: "IF-88410", customer: "Felipe Costa", phone: "+55 11 91122-3300", items: ["1× Combo Família"], total: 189.9, payment: "Cartão", paymentStatus: "Aprovado", time: "12:55", status: "finalizado", source: "ifood" },
+  { id: "CD-00718", customer: "Gisele Martins", phone: "+55 11 98800-1144", items: ["1× Salada Caesar"], total: 28, payment: "Pix", paymentStatus: "Aprovado", time: "12:40", status: "finalizado", source: "cardapio" },
+  { id: "99-44021", customer: "Henrique Alves", phone: "+55 11 97700-5566", items: ["2× Marmita Tradicional"], total: 51.8, payment: "Pix", paymentStatus: "Estornado", time: "12:12", status: "cancelado", source: "99food" },
+  { id: "IF-88395", customer: "Isabela Rocha", phone: "+55 11 96655-8899", items: ["1× Pizza Quatro Queijos"], total: 79, payment: "Cartão", paymentStatus: "Aprovado", time: "11:58", status: "entrega", source: "ifood" },
+  { id: "WH-10284", customer: "João Pedro", phone: "+55 11 91234-5678", items: ["1× Combo Burguer Duplo"], total: 49.9, payment: "Pix", paymentStatus: "Aprovado", time: "11:42", status: "novo", source: "whatsapp" },
+  { id: "RA-55088", customer: "Marina Souza", phone: "+55 11 99876-5432", items: ["2× Pizza Calabresa G"], total: 136, payment: "Cartão", paymentStatus: "Aprovado", time: "11:30", status: "preparo", source: "rappi" },
+  { id: "CD-00709", customer: "Rafael Torres", phone: "+55 11 98765-1234", items: ["1× X-Bacon Especial", "1× Refri Lata"], total: 38.9, payment: "Pix", paymentStatus: "Aprovado", time: "11:15", status: "novo", source: "cardapio" },
 ];
 
 export const SALES_DATA = [

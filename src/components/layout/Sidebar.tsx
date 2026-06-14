@@ -26,9 +26,9 @@ const NAV: NavItem[] = [
   { to: "/pedidos", label: "Pedidos", icon: ClipboardList, badge: 4 },
   { to: "/financeiro", label: "Financeiro", icon: Wallet },
   { to: "/produtos", label: "Produtos", icon: UtensilsCrossed },
-  { to: "/promocoes", label: "Promoções", icon: Tag },
   { to: "/marketing", label: "Marketing", icon: Megaphone },
 ];
+void Tag;
 
 const CONFIG = [
   { to: "/automacao", label: "Automação", icon: Zap },
