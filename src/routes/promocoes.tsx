@@ -24,6 +24,7 @@ import {
   Save,
   BadgePercent,
 } from "lucide-react";
+import { ProdutosTabs } from "@/components/ui/ProdutosTabs";
 
 export const Route = createFileRoute("/promocoes")({
   head: () => ({ meta: [{ title: "Promoções — Sinal" }] }),
@@ -84,6 +85,7 @@ function PromocoesPage() {
 
   return (
     <AppLayout title="Promoções">
+      <ProdutosTabs />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-accent mb-2">
