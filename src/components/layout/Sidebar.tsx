@@ -5,7 +5,6 @@ import {
   ClipboardList,
   Wallet,
   UtensilsCrossed,
-  Tag,
   Megaphone,
   Zap,
   Settings,
@@ -28,7 +27,7 @@ const NAV: NavItem[] = [
   { to: "/produtos", label: "Produtos", icon: UtensilsCrossed },
   { to: "/marketing", label: "Marketing", icon: Megaphone },
 ];
-void Tag;
+
 
 const CONFIG = [
   { to: "/automacao", label: "Automação", icon: Zap },
