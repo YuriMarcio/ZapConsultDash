@@ -105,6 +105,22 @@ export const MESSAGES_BY_CONV: Record<string, ChatMessage[]> = {
   ],
 };
 
+export interface Category {
+  id: string;
+  name: string;
+  image?: string; // URL ou dataURL
+  color?: string; // fallback de fundo
+}
+
+export const CATEGORIES: Category[] = [
+  { id: "cat1", name: "Lanches", color: "from-amber-500/30 to-orange-600/20" },
+  { id: "cat2", name: "Combos", color: "from-rose-500/30 to-red-600/20" },
+  { id: "cat3", name: "Pizzas", color: "from-red-500/30 to-yellow-600/20" },
+  { id: "cat4", name: "Marmitas", color: "from-emerald-500/30 to-lime-600/20" },
+  { id: "cat5", name: "Bebidas", color: "from-sky-500/30 to-cyan-600/20" },
+  { id: "cat6", name: "Sobremesas", color: "from-fuchsia-500/30 to-pink-600/20" },
+];
+
 export interface Product {
   id: string;
   name: string;
