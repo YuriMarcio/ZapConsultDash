@@ -23,12 +23,15 @@ export const Route = createFileRoute("/produtos")({
 
 function ProdutosPage() {
   const [products, setProducts] = useState<Product[]>(PRODUCTS);
-  const categories = ["Todos", ...Array.from(new Set(products.map((p) => p.category)))];
+  const [cats, setCats] = useState<Category[]>(CATEGORIES);
+  const categoryNames = cats.map((c) => c.name);
   const [filter, setFilter] = useState("Todos");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
 
   const items = products.filter(
     (p) =>
