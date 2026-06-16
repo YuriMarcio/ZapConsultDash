@@ -232,10 +232,10 @@ function CategoryChip({
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 w-[100px] h-[120px] rounded-xl overflow-hidden relative text-left transition ring-1 ${
+      className={`shrink-0 w-[120px] h-[88px] rounded-2xl overflow-hidden relative text-left transition-all duration-300 snap-start ${
         active
-          ? "ring-2 ring-primary scale-[1.02] shadow-md"
-          : "ring-border hover:ring-accent/40"
+          ? "ring-[2.5px] ring-primary scale-[1.03] shadow-lg shadow-primary/10"
+          : "ring-1 ring-border/60 hover:ring-accent/40 hover:shadow-md hover:-translate-y-0.5"
       }`}
     >
       {image ? (
@@ -243,13 +243,16 @@ function CategoryChip({
       ) : (
         <div className={`absolute inset-0 bg-gradient-to-br ${color || "from-muted to-muted/40"}`} />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-      <div className="absolute top-1.5 right-1.5 bg-white/95 text-black text-[10px] font-bold font-mono px-1.5 rounded">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/5" />
+      <div className="absolute top-2 right-2 bg-white/95 backdrop-blur text-[9px] font-bold font-mono px-1.5 py-[2px] rounded-md leading-none shadow-sm">
         {count}
       </div>
-      <div className="absolute bottom-2 left-2 right-2">
-        <div className="text-[11px] font-bold text-white leading-tight line-clamp-2">{label}</div>
+      <div className="absolute bottom-2.5 left-2.5 right-2.5">
+        <div className="text-[11px] font-bold text-white leading-tight line-clamp-2 drop-shadow-sm">{label}</div>
       </div>
+      {active && (
+        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-6 h-[3px] bg-white rounded-full shadow" />
+      )}
     </button>
   );
 }
