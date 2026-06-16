@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusPill } from "@/components/ui/StatusPill";
-import { PRODUCTS, type Product } from "@/lib/mock-data";
-import { Plus, Search, Edit3, ImagePlus, X, Upload, Smartphone, Save } from "lucide-react";
+import { PRODUCTS, CATEGORIES, type Product, type Category } from "@/lib/mock-data";
+import { Plus, Search, Edit3, ImagePlus, X, Upload, Smartphone, Save, FolderPlus, Trash2, Image as ImageIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,6 @@ export const Route = createFileRoute("/produtos")({
   component: ProdutosPage,
 });
 
-const DEFAULT_CATEGORIES = ["Lanches", "Combos", "Pizzas", "Marmitas", "Bebidas", "Sobremesas"];
 
 function ProdutosPage() {
   const [products, setProducts] = useState<Product[]>(PRODUCTS);
