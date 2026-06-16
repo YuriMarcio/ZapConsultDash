@@ -6,9 +6,13 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  redirect,
 } from "@tanstack/react-router";
+import { tokenStore } from "@/api/client";
 
 import appCss from "../styles.css?url";
+
+const PUBLIC_ROUTES = ["/login", "/cadastro", "/recuperar"];
 
 function NotFoundComponent() {
   return (
@@ -68,6 +72,19 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: ({ location }) => {
+    if (typeof window === "undefined") return; // skip no servidor (SSR)
+
+    const isPublic = PUBLIC_ROUTES.some((r) => location.pathname.startsWith(r));
+    const token = tokenStore.get();
+
+    if (!isPublic && !token) {
+      throw redirect({ to: "/login" });
+    }
+    if (location.pathname === "/login" && token) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
