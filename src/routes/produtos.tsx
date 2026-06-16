@@ -59,40 +59,62 @@ function ProdutosPage() {
           </p>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Produtos & Estoque</h1>
         </div>
-        <button
-          onClick={() => setOpen(true)}
-          className="px-3 py-2 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground rounded flex items-center justify-center gap-2 hover:opacity-90 w-full sm:w-auto"
-        >
-          <Plus className="size-3.5" /> Novo produto
-        </button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={() => setCatOpen(true)}
+            className="px-3 py-2 text-xs font-bold uppercase tracking-widest border border-border bg-card rounded flex items-center justify-center gap-2 hover:bg-muted flex-1 sm:flex-initial"
+          >
+            <FolderPlus className="size-3.5" /> Categorias
+          </button>
+          <button
+            onClick={() => setOpen(true)}
+            className="px-3 py-2 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground rounded flex items-center justify-center gap-2 hover:opacity-90 flex-1 sm:flex-initial"
+          >
+            <Plus className="size-3.5" /> Novo produto
+          </button>
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <div className="flex gap-1 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
-          {categories.map((c) => (
-            <button
-              key={c}
-              onClick={() => setFilter(c)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors whitespace-nowrap shrink-0 ${
-                filter === c
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-card border border-border text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded w-full sm:w-auto">
-          <Search className="size-3.5 text-muted-foreground shrink-0" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar produto..."
-            className="bg-transparent text-xs outline-none w-full sm:w-48"
+      {/* Strip de categorias com foto */}
+      <div className="mb-5 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
+        <div className="flex gap-3 pb-2 min-w-max">
+          <CategoryChip
+            label="Todos"
+            count={products.length}
+            active={filter === "Todos"}
+            onClick={() => setFilter("Todos")}
           />
+          {cats.map((c) => (
+            <CategoryChip
+              key={c.id}
+              label={c.name}
+              image={c.image}
+              color={c.color}
+              count={products.filter((p) => p.category === c.name).length}
+              active={filter === c.name}
+              onClick={() => setFilter(c.name)}
+            />
+          ))}
+          <button
+            onClick={() => setCatOpen(true)}
+            className="shrink-0 w-[100px] h-[120px] rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-muted-foreground hover:border-accent/60 hover:text-accent hover:bg-accent/5 transition"
+          >
+            <Plus className="size-5" />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Nova</span>
+          </button>
         </div>
       </div>
+
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded mb-6 w-full sm:w-72">
+        <Search className="size-3.5 text-muted-foreground shrink-0" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar produto..."
+          className="bg-transparent text-xs outline-none w-full"
+        />
+      </div>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {items.map((p, i) => (
