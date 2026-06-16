@@ -75,9 +75,9 @@ function ProdutosPage() {
         </div>
       </div>
 
-      {/* Strip de categorias com foto */}
-      <div className="mb-5 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
-        <div className="flex gap-3 pb-2 min-w-max">
+      {/* Strip de categorias */}
+      <div className="mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex gap-2.5 pb-3 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide">
           <CategoryChip
             label="Todos"
             count={products.length}
@@ -97,10 +97,10 @@ function ProdutosPage() {
           ))}
           <button
             onClick={() => setCatOpen(true)}
-            className="shrink-0 w-[100px] h-[120px] rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-muted-foreground hover:border-accent/60 hover:text-accent hover:bg-accent/5 transition"
+            className="shrink-0 w-[100px] h-[88px] rounded-2xl border-2 border-dashed border-border/80 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-accent/50 hover:text-accent hover:bg-accent/[0.04] transition-all duration-200 snap-start"
           >
-            <Plus className="size-5" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Nova</span>
+            <Plus className="size-5 stroke-[2.5]" />
+            <span className="text-[9px] font-bold uppercase tracking-[0.15em]">Nova</span>
           </button>
         </div>
       </div>
