@@ -190,20 +190,227 @@ function ProdutosPage() {
         open={open}
         onOpenChange={setOpen}
         onCreate={handleCreate}
+        categories={cats}
       />
       <ProdutoDialog
         product={editingProduct}
         open={!!editingProduct}
         onOpenChange={(v) => !v && setEditingProduct(null)}
         onUpdate={handleUpdate}
+        categories={cats}
       />
       <WhatsappPreviewDialog
         product={previewProduct}
         onClose={() => setPreviewProduct(null)}
       />
+      <CategoriasDialog
+        open={catOpen}
+        onOpenChange={setCatOpen}
+        categories={cats}
+        onChange={setCats}
+        products={products}
+      />
     </AppLayout>
   );
 }
+
+function CategoryChip({
+  label,
+  image,
+  color,
+  count,
+  active,
+  onClick,
+}: {
+  label: string;
+  image?: string;
+  color?: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`shrink-0 w-[100px] h-[120px] rounded-xl overflow-hidden relative text-left transition ring-1 ${
+        active
+          ? "ring-2 ring-primary scale-[1.02] shadow-md"
+          : "ring-border hover:ring-accent/40"
+      }`}
+    >
+      {image ? (
+        <img src={image} alt={label} className="absolute inset-0 w-full h-full object-cover" />
+      ) : (
+        <div className={`absolute inset-0 bg-gradient-to-br ${color || "from-muted to-muted/40"}`} />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+      <div className="absolute top-1.5 right-1.5 bg-white/95 text-black text-[10px] font-bold font-mono px-1.5 rounded">
+        {count}
+      </div>
+      <div className="absolute bottom-2 left-2 right-2">
+        <div className="text-[11px] font-bold text-white leading-tight line-clamp-2">{label}</div>
+      </div>
+    </button>
+  );
+}
+
+function CategoriasDialog({
+  open,
+  onOpenChange,
+  categories,
+  onChange,
+  products,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  categories: Category[];
+  onChange: (c: Category[]) => void;
+  products: Product[];
+}) {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState<string | undefined>();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (f: File | null | undefined) => {
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => setImage(reader.result as string);
+    reader.readAsDataURL(f);
+  };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    const newCat: Category = {
+      id: `cat${Date.now()}`,
+      name: name.trim(),
+      image,
+      color: "from-accent/30 to-primary/20",
+    };
+    onChange([...categories, newCat]);
+    setName("");
+    setImage(undefined);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const remove = (id: string) => {
+    onChange(categories.filter((c) => c.id !== id));
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto p-0 gap-0">
+        <DialogHeader className="px-5 sm:px-6 pt-6 pb-4 border-b border-border">
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-accent mb-1">
+            Organização
+          </p>
+          <DialogTitle className="text-xl font-bold tracking-tight">Categorias</DialogTitle>
+          <DialogDescription className="text-xs">
+            Crie categorias com foto para destacar visualmente seu cardápio.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="px-5 sm:px-6 py-5 space-y-6">
+          {/* Form criação */}
+          <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-[120px_1fr_auto] gap-3 items-end">
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
+                Foto
+              </label>
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                className="w-full h-[88px] border-2 border-dashed border-border rounded-lg flex items-center justify-center text-muted-foreground hover:border-accent/50 hover:bg-muted/50 transition overflow-hidden relative"
+              >
+                {image ? (
+                  <img src={image} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                ) : (
+                  <Upload className="size-5" />
+                )}
+              </button>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFile(e.target.files?.[0])}
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
+                Nome da categoria
+              </label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ex: Açaí, Vegano, Especiais…"
+                className="w-full px-3 py-2 bg-card border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition"
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-4 py-2 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground rounded hover:opacity-90 flex items-center gap-2 justify-center"
+            >
+              <Plus className="size-3.5" /> Adicionar
+            </button>
+          </form>
+
+          {/* Lista atual */}
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+              {categories.length} categorias cadastradas
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {categories.map((c) => {
+                const count = products.filter((p) => p.category === c.name).length;
+                return (
+                  <div
+                    key={c.id}
+                    className="relative rounded-xl overflow-hidden border border-border bg-card group"
+                  >
+                    <div className="aspect-[4/3] relative">
+                      {c.image ? (
+                        <img src={c.image} alt={c.name} className="absolute inset-0 w-full h-full object-cover" />
+                      ) : (
+                        <div className={`absolute inset-0 bg-gradient-to-br ${c.color || "from-muted to-muted/40"} flex items-center justify-center`}>
+                          <ImageIcon className="size-6 text-muted-foreground/50" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent" />
+                      <button
+                        onClick={() => remove(c.id)}
+                        disabled={count > 0}
+                        title={count > 0 ? "Remova os produtos vinculados primeiro" : "Excluir"}
+                        className="absolute top-1.5 right-1.5 size-7 rounded bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:bg-rose-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-background/90 disabled:hover:text-current"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <div className="text-xs font-bold text-white">{c.name}</div>
+                        <div className="text-[10px] text-white/70 font-mono">{count} {count === 1 ? "item" : "itens"}</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter className="px-5 sm:px-6 py-4 border-t border-border">
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="px-4 py-2 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground rounded hover:opacity-90"
+          >
+            Concluído
+          </button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 function WhatsappPreviewDialog({
   product,
