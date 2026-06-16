@@ -486,7 +486,7 @@ function ProdutoDialog({
 
   const reset = () => {
     setName("");
-    setCategory(DEFAULT_CATEGORIES[0]);
+    setCategory(catNames[0] || "");
     setPrice("");
     setStock("");
     setDescription("");
