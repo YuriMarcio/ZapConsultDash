@@ -451,17 +451,21 @@ function ProdutoDialog({
   onCreate,
   onUpdate,
   product,
+  categories,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   onCreate?: (p: Product) => void;
   onUpdate?: (p: Product) => void;
   product?: Product | null;
+  categories: Category[];
 }) {
   const isEdit = !!product;
+  const catNames = categories.map((c) => c.name);
 
   const [name, setName] = useState("");
-  const [category, setCategory] = useState(DEFAULT_CATEGORIES[0]);
+  const [category, setCategory] = useState(catNames[0] || "");
+
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [description, setDescription] = useState("");
