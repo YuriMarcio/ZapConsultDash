@@ -76,8 +76,8 @@ function ProdutosPage() {
       </div>
 
       {/* Strip de categorias */}
-      <div className="mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex gap-2.5 pb-3 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide">
+      <div className="mb-5 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex gap-2 pb-2 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide">
           <CategoryChip
             label="Todos"
             count={products.length}
@@ -97,10 +97,10 @@ function ProdutosPage() {
           ))}
           <button
             onClick={() => setCatOpen(true)}
-            className="shrink-0 w-[100px] h-[88px] rounded-2xl border-2 border-dashed border-border/80 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-accent/50 hover:text-accent hover:bg-accent/[0.04] transition-all duration-200 snap-start"
+            className="shrink-0 w-[80px] h-[64px] rounded-xl border border-dashed border-border/70 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-accent/40 hover:text-accent hover:bg-accent/[0.03] transition-all duration-200 snap-start"
           >
-            <Plus className="size-5 stroke-[2.5]" />
-            <span className="text-[9px] font-bold uppercase tracking-[0.15em]">Nova</span>
+            <Plus className="size-4 stroke-[2.5]" />
+            <span className="text-[9px] font-semibold uppercase tracking-wider">Nova</span>
           </button>
         </div>
       </div>
@@ -232,10 +232,10 @@ function CategoryChip({
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 w-[120px] h-[88px] rounded-2xl overflow-hidden relative text-left transition-all duration-300 snap-start ${
+      className={`shrink-0 w-[92px] h-[64px] rounded-xl overflow-hidden relative text-left transition-all duration-200 snap-start ${
         active
-          ? "ring-[2.5px] ring-primary scale-[1.03] shadow-lg shadow-primary/10"
-          : "ring-1 ring-border/60 hover:ring-accent/40 hover:shadow-md hover:-translate-y-0.5"
+          ? "ring-2 ring-primary"
+          : "ring-1 ring-border/50 hover:ring-accent/30"
       }`}
     >
       {image ? (
@@ -243,15 +243,18 @@ function CategoryChip({
       ) : (
         <div className={`absolute inset-0 bg-gradient-to-br ${color || "from-muted to-muted/40"}`} />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/5" />
-      <div className="absolute top-2 right-2 bg-white/95 backdrop-blur text-[9px] font-bold font-mono px-1.5 py-[2px] rounded-md leading-none shadow-sm">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
+      {/* contador discreto */}
+      <div className="absolute top-1.5 right-1.5 text-[9px] font-bold font-mono text-white/90 leading-none drop-shadow">
         {count}
       </div>
-      <div className="absolute bottom-2.5 left-2.5 right-2.5">
-        <div className="text-[11px] font-bold text-white leading-tight line-clamp-2 drop-shadow-sm">{label}</div>
+      <div className="absolute bottom-2 left-2 right-2">
+        <div className={`text-[10px] font-semibold leading-tight line-clamp-2 drop-shadow-sm ${active ? "text-white" : "text-white/90"}`}>
+          {label}
+        </div>
       </div>
       {active && (
-        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-6 h-[3px] bg-white rounded-full shadow" />
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-5 h-[2px] bg-white/90 rounded-full" />
       )}
     </button>
   );
