@@ -23,11 +23,21 @@ export interface AuthUser {
   id: string | number;
   name: string;
   email: string;
-  role: "owner" | "manager" | "attendant";
+  role: "super_admin" | "owner" | "manager" | "attendant";
   plan?: string;
+  planName?: string;
+  features?: string[];
+  marketingCommissionPercent?: number | null;
+  mustChangePassword?: boolean;
   tenant_id?: string;
   restaurantId?: string;
 }
+
+export interface ChangePasswordRequest {
+  newPassword: string;
+}
+
+export type ChangePasswordResponse = ApiResponse<AuthUser>;
 
 export interface LoginRequest {
   email: string;
@@ -101,7 +111,10 @@ export interface Conversation {
   time: string;
   unread: number;
   status: ConvStatus;
-  tag?: string;
+  tags: string[];
+  totalOrders: number;
+  avgTicket: number;
+  memberSince: string | null;
 }
 
 export interface ChatMessage {
@@ -111,6 +124,40 @@ export interface ChatMessage {
   time: string;
 }
 
+// Formato bruto retornado pela API (ConversationResource/MessageResource no backend).
+export interface ConversationDTO {
+  id: number;
+  status: string;
+  tags: string[];
+  unread_count: number;
+  last_message_at: string | null;
+  customer: {
+    id: number;
+    name: string;
+    phone: string;
+    avatar: string;
+    total_orders: number;
+    avg_ticket: number;
+    member_since: string | null;
+  } | null;
+  last_message: {
+    body: string | null;
+    from_me: boolean;
+    type: string;
+    created_at: string | null;
+  } | null;
+  created_at: string;
+}
+
+export interface MessageDTO {
+  id: number;
+  body: string | null;
+  from_me: boolean;
+  message_type: string;
+  media_url: string | null;
+  created_at: string | null;
+}
+
 export interface ListConversationsRequest {
   status?: ConvStatus;
   search?: string;
@@ -118,6 +165,8 @@ export interface ListConversationsRequest {
 
 export type ListConversationsResponse = ApiResponse<Conversation[]>;
 export type GetConversationResponse = ApiResponse<Conversation>;
+export type ListConversationsResponseDTO = ApiResponse<ConversationDTO[]>;
+export type GetConversationResponseDTO = ApiResponse<ConversationDTO>;
 
 export interface GetMessagesRequest {
   page?: number;
@@ -125,6 +174,7 @@ export interface GetMessagesRequest {
 }
 
 export type GetMessagesResponse = PaginatedResponse<ChatMessage>;
+export type GetMessagesResponseDTO = PaginatedResponse<MessageDTO>;
 
 export interface SendMessageRequest {
   text: string;
@@ -138,6 +188,26 @@ export interface UpdateConversationRequest {
 }
 
 export type UpdateConversationResponse = ApiResponse<Conversation>;
+
+// ─── Mensagens rápidas ─────────────────────────────────────────────────────────
+
+export interface QuickMessage {
+  id: number;
+  title: string;
+  body: string;
+  sort_order: number;
+}
+
+export interface CreateQuickMessageRequest {
+  title: string;
+  body: string;
+  sort_order?: number;
+}
+
+export type UpdateQuickMessageRequest = Partial<CreateQuickMessageRequest>;
+
+export type ListQuickMessagesResponse = ApiResponse<QuickMessage[]>;
+export type QuickMessageResponse = ApiResponse<QuickMessage>;
 
 // ─── Products & Categories ───────────────────────────────────────────────────
 
@@ -303,13 +373,14 @@ export type TopProductsResponse = ApiResponse<TopProduct[]>;
 
 // ─── Channels (WhatsApp) ──────────────────────────────────────────────────────
 
-export type ChannelStatus = "connected" | "disconnected" | "awaiting_scan" | "sincronizando";
+export type ChannelStatus = "connected" | "disconnected" | "awaiting_scan" | "sincronizando" | "pending";
 
 export interface WhatsappChannel {
   phone: string;
   device: string;
   location: string;
   status: ChannelStatus;
+  qrCode: string | null;
   messages: number;
   lastSync: string;
   latencyMs: number;
@@ -373,3 +444,121 @@ export interface Integration {
 export type ListIntegrationsResponse    = ApiResponse<Integration[]>;
 export interface ConnectIntegrationRequest { merchantId: string; token?: string }
 export type IntegrationResponse          = ApiResponse<Integration>;
+
+// ─── Admin (Painel SINAL) ─────────────────────────────────────────────────────
+
+export type ClientStatus = "trialing" | "active" | "suspended" | "inactive";
+
+export interface AdminClient {
+  id: string;
+  name: string;
+  ownerName: string | null;
+  ownerEmail: string | null;
+  ownerPhone?: string | null;
+  plan: string;
+  status: ClientStatus;
+  whatsappStatus: ChannelStatus;
+  createdAt: string;
+  expiresAt?: string | null;
+  isExpiringSoon?: boolean;
+  monthlyRevenue?: number;
+}
+
+export interface ListClientsRequest {
+  status?: ClientStatus | "expiring";
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export type ListClientsResponse = PaginatedResponse<AdminClient>;
+export type GetClientResponse = ApiResponse<AdminClient>;
+
+export interface CreateClientRequest {
+  name: string;
+  ownerName: string;
+  ownerEmail: string;
+  ownerPhone?: string;
+  plan: string;
+}
+
+export interface CreateClientResult {
+  client: AdminClient;
+  status: "awaiting_scan";
+  /** Full `data:image/png;base64,...` URI — ready to use directly as an <img src>. */
+  qr_code: string;
+  instance: string;
+  /** Temporary password for the new owner user — only ever returned this once. */
+  ownerPassword: string;
+}
+
+export type CreateClientResponse = ApiResponse<CreateClientResult>;
+
+export interface UpdateClientStatusRequest {
+  status: ClientStatus;
+}
+
+export type UpdateClientStatusResponse = ApiResponse<AdminClient>;
+
+export interface Plan {
+  id: number;
+  slug: string;
+  name: string;
+  marketingCommissionPercent: number;
+  features: string[];
+  isActive: boolean;
+}
+
+export type ListPlansResponse = ApiResponse<Plan[]>;
+export type PlanResponse = ApiResponse<Plan>;
+
+export interface CreatePlanRequest {
+  slug: string;
+  name: string;
+  marketingCommissionPercent?: number;
+  features: string[];
+  isActive?: boolean;
+}
+
+export type UpdatePlanRequest = Partial<CreatePlanRequest>;
+
+export interface AdminSettings {
+  masterWhatsappInstance: string | null;
+}
+
+export type AdminSettingsResponse = ApiResponse<AdminSettings>;
+export type UpdateAdminSettingsRequest = Partial<AdminSettings>;
+
+export interface AdminWhatsappInstance {
+  id: number;
+  clientId: string;
+  clientName: string;
+  phone?: string | null;
+  device?: string | null;
+  status: ChannelStatus;
+  lastSync?: string | null;
+  latencyMs?: number | null;
+}
+
+export type ListInstancesResponse = ApiResponse<AdminWhatsappInstance[]>;
+
+export interface ReconnectInstanceResult {
+  status: "awaiting_scan";
+  /** Full `data:image/png;base64,...` URI — ready to use directly as an <img src>. */
+  qr_code: string;
+}
+
+export type ReconnectInstanceResponse = ApiResponse<ReconnectInstanceResult>;
+
+export interface AdminDashboardSummary {
+  totalClients: number;
+  activeClients: number;
+  trialingClients: number;
+  suspendedClients: number;
+  instancesConnected: number;
+  instancesDisconnected: number;
+  mrr: number;
+  newClientsThisMonth: number;
+}
+
+export type AdminDashboardSummaryResponse = ApiResponse<AdminDashboardSummary>;

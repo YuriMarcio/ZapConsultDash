@@ -1,8 +1,9 @@
-import type { ApiError } from "./types";
+import type { ApiError, AuthUser } from "./types";
 import { ENDPOINTS } from "./endpoints";
 
 const TOKEN_KEY = "access_token";
 const REFRESH_KEY = "refresh_token";
+const USER_KEY = "auth_user";
 const isBrowser = typeof window !== "undefined";
 
 export const tokenStore = {
@@ -10,7 +11,11 @@ export const tokenStore = {
   set:         (t: string)  => { if (isBrowser) localStorage.setItem(TOKEN_KEY, t); },
   getRefresh:  ()           => isBrowser ? localStorage.getItem(REFRESH_KEY)  : null,
   setRefresh:  (t: string)  => { if (isBrowser) localStorage.setItem(REFRESH_KEY, t); },
-  clear:       ()           => { if (isBrowser) { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(REFRESH_KEY); } },
+  // Cached alongside the tokens so route guards can read the role/tenant_id
+  // synchronously in beforeLoad, without waiting on a useMe() round-trip.
+  getUser:     (): AuthUser | null => isBrowser ? JSON.parse(localStorage.getItem(USER_KEY) ?? "null") : null,
+  setUser:     (u: AuthUser) => { if (isBrowser) localStorage.setItem(USER_KEY, JSON.stringify(u)); },
+  clear:       ()           => { if (isBrowser) { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(REFRESH_KEY); localStorage.removeItem(USER_KEY); } },
 };
 
 let refreshing: Promise<string> | null = null;

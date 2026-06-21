@@ -1,7 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, tokenStore } from "@/api/client";
 import { ENDPOINTS } from "@/api/endpoints";
-import type { ApiResponse, LoginRequest, LoginResponse, MeResponse, RefreshRequest, RefreshResponse } from "@/api/types";
+import type {
+  ApiResponse,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+  LoginRequest,
+  LoginResponse,
+  MeResponse,
+  RefreshRequest,
+  RefreshResponse,
+} from "@/api/types";
 
 export const authKeys = {
   me: () => ["auth", "me"] as const,
@@ -23,6 +32,7 @@ export function useLogin() {
     onSuccess: (res) => {
       tokenStore.set(res.data.accessToken);
       tokenStore.setRefresh(res.data.refreshToken);
+      tokenStore.setUser(res.data.user);
       qc.invalidateQueries({ queryKey: authKeys.me() });
     },
   });
@@ -36,6 +46,18 @@ export function useLogout() {
       tokenStore.clear();
       qc.clear();
       window.location.href = "/login";
+    },
+  });
+}
+
+export function useChangePassword() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ChangePasswordRequest) =>
+      api.post<ChangePasswordResponse>(ENDPOINTS.auth.changePassword, body),
+    onSuccess: (res) => {
+      tokenStore.setUser(res.data);
+      qc.invalidateQueries({ queryKey: authKeys.me() });
     },
   });
 }

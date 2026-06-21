@@ -154,7 +154,7 @@ export function ConversasPage() {
                   <MessageComposer value={draft} onChange={setDraft} onSend={send} />
                 </div>
 
-                <CustomerSidePanel conversation={active} />
+                <CustomerSidePanel conversation={active} onInsertQuickReply={setDraft} />
               </>
             )}
           </>

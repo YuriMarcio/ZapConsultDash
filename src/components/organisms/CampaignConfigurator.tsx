@@ -3,6 +3,7 @@ import { FormLabel } from "@/components/atoms/FormLabel";
 import { FormInput } from "@/components/atoms/FormInput";
 import { FormHint } from "@/components/atoms/FormHint";
 import { SectionTitle } from "@/components/atoms/SectionTitle";
+import { useMe } from "@/api/services/auth.service";
 import type { CampaignPlan } from "@/api/types";
 import {
   Megaphone,
@@ -67,6 +68,11 @@ export function CampaignConfigurator({
   const [ageRange, setAgeRange] = useState<[number, number]>([18, 55]);
   const [audience, setAudience] = useState<string[]>(["Fome", "Delivery", "Hamburguer"]);
   const [newInterest, setNewInterest] = useState("");
+
+  const { data: me } = useMe();
+  const commissionPercent = me?.data?.marketingCommissionPercent ?? 0;
+  const commissionAmount = plan.price * (commissionPercent / 100);
+  const totalWithCommission = plan.price + commissionAmount;
 
   const estimatedDailyReach = useMemo(() => {
     const base = (plan.reachMin + plan.reachMax) / 2;
@@ -352,6 +358,16 @@ export function CampaignConfigurator({
           <Row label="Investimento">
             <span className="font-mono">R$ {plan.price.toFixed(2).replace(".", ",")}</span>
           </Row>
+          {commissionPercent > 0 && (
+            <>
+              <Row label={`Taxa da plataforma (${commissionPercent}%)`}>
+                <span className="font-mono">R$ {commissionAmount.toFixed(2).replace(".", ",")}</span>
+              </Row>
+              <Row label="Total">
+                <span className="font-mono">R$ {totalWithCommission.toFixed(2).replace(".", ",")}</span>
+              </Row>
+            </>
+          )}
           <Row label="Alcance estimado">
             <span className="font-mono">{formatRange(plan.reachMin, plan.reachMax)}</span>
           </Row>

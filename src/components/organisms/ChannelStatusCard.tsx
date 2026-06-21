@@ -26,6 +26,10 @@ export function ChannelStatusCard() {
   const sync       = useSyncChannel();
   const qc         = useQueryClient();
 
+  // Fall back to the QR code persisted on the server (e.g. after a page
+  // reload, before the connect mutation has run again in this session).
+  const effectiveQrCode = qrCode ?? channel?.qrCode ?? null;
+
   // Clear QR and refresh conversations when WhatsApp connects
   useEffect(() => {
     if (status === "connected") {
@@ -50,11 +54,13 @@ export function ChannelStatusCard() {
         {status === "awaiting_scan" && <StatusPill tone="warning" dot>Aguardando scan</StatusPill>}
         {status === "disconnected" && <StatusPill tone="muted">Desconectado</StatusPill>}
         {status === "sincronizando" && <StatusPill tone="info" dot>Sincronizando</StatusPill>}
-        {!status && <StatusPill tone="muted">Desconectado</StatusPill>}
+        {(!status || status === "disconnected" || status === "pending") && (
+          <StatusPill tone="muted">Desconectado</StatusPill>
+        )}
       </div>
 
       {/* DISCONNECTED — show connect button */}
-      {(!status || status === "disconnected") && (
+      {(!status || status === "disconnected" || status === "pending") && (
         <div className="flex flex-col items-center justify-center py-8 gap-4">
           <div className="size-16 rounded-full bg-muted flex items-center justify-center">
             <WifiOff className="size-7 text-muted-foreground" />
@@ -85,10 +91,10 @@ export function ChannelStatusCard() {
       )}
 
       {/* AWAITING SCAN — show real QR code */}
-      {(status === "awaiting_scan" || (qrCode && status !== "connected")) && qrCode && (
+      {(status === "awaiting_scan" || (effectiveQrCode && status !== "connected")) && effectiveQrCode && (
         <div className="flex flex-col items-center justify-center gap-4">
           <img
-            src={`data:image/png;base64,${qrCode}`}
+            src={`data:image/png;base64,${effectiveQrCode}`}
             width={192}
             height={192}
             alt="QR Code WhatsApp"
@@ -108,7 +114,7 @@ export function ChannelStatusCard() {
       )}
 
       {/* AWAITING SCAN but no qrCode yet (just triggered) */}
-      {status === "awaiting_scan" && !qrCode && (
+      {status === "awaiting_scan" && !effectiveQrCode && (
         <div className="flex flex-col items-center justify-center py-8 gap-3">
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
           <p className="text-xs text-muted-foreground">Gerando QR Code...</p>

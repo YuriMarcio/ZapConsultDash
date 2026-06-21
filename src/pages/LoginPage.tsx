@@ -17,7 +17,8 @@ export function LoginPage() {
     login.mutate(
       { email, password },
       {
-        onSuccess: () => navigate({ to: "/dashboard" }),
+        onSuccess: (res) =>
+          navigate({ to: res.data.user.role === "super_admin" ? "/admin" : "/dashboard" }),
         onError: (err) => {
           const apiErr = err as ApiError;
           setError(apiErr?.message || "E-mail ou senha inválidos.");

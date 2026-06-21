@@ -4,12 +4,16 @@ import { SourceFilterBar } from "@/components/organisms/SourceFilterBar";
 import { KanbanBoard } from "@/components/organisms/KanbanBoard";
 import { useOrders } from "@/api/services/orders.service";
 import { useUpdateOrder } from "@/api/services/orders.service";
+import { useMe } from "@/api/services/auth.service";
 import type { OrderSource, OrderStatus } from "@/api/types";
 import { Bell, Search } from "lucide-react";
 
 const SOURCES: (OrderSource | "all")[] = ["all", "whatsapp", "ifood", "rappi", "ubereats", "99food", "cardapio"];
 
 export function PedidosPage() {
+  const { data: me } = useMe();
+  const hasMultiChannel = (me?.data?.features ?? []).includes("pedidos_multi_canal");
+
   const [sourceFilter, setSourceFilter] = useState<OrderSource | "all">("all");
   const [search, setSearch] = useState("");
 
@@ -17,9 +21,11 @@ export function PedidosPage() {
   const updateOrder = useUpdateOrder();
   const allOrders = data?.data ?? [];
 
+  const effectiveSourceFilter = hasMultiChannel ? sourceFilter : "whatsapp";
+
   const visible = allOrders.filter(
     (o) =>
-      (sourceFilter === "all" || o.source === sourceFilter) &&
+      (effectiveSourceFilter === "all" || o.source === effectiveSourceFilter) &&
       (search === "" ||
         o.id.toLowerCase().includes(search.toLowerCase()) ||
         o.customer.toLowerCase().includes(search.toLowerCase())),
@@ -61,7 +67,9 @@ export function PedidosPage() {
         </div>
       </div>
 
-      <SourceFilterBar active={sourceFilter} counts={counts} onChange={setSourceFilter} />
+      {hasMultiChannel && (
+        <SourceFilterBar active={sourceFilter} counts={counts} onChange={setSourceFilter} />
+      )}
 
       <KanbanBoard orders={visible} onStatusChange={handleStatusChange} />
     </AppLayout>

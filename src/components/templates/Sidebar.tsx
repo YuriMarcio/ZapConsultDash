@@ -11,7 +11,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useMe } from "@/api/services/auth.service";
+import { useLogout, useMe } from "@/api/services/auth.service";
 import { useConversations } from "@/api/services/conversations.service";
 import { useOrders } from "@/api/services/orders.service";
 
@@ -35,22 +35,24 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const { data: me }    = useMe();
   const { data: convs } = useConversations();
   const { data: newOrders } = useOrders({ status: "novo" });
+  const logout = useLogout();
 
   const userName  = me?.data?.name  ?? "";
-  const userPlan  = me?.data?.plan  ?? "";
+  const userPlan  = me?.data?.planName ?? me?.data?.plan ?? "";
+  const features  = me?.data?.features ?? [];
   const userInits = userName ? initials(userName) : "…";
 
   const unreadConvs = convs?.data?.reduce((s, c) => s + (c.unread ?? 0), 0) ?? 0;
   const newOrdersCount = newOrders?.data?.length ?? 0;
 
   const NAV = [
-    { to: "/dashboard",  label: "Dashboard",  icon: LayoutDashboard },
-    { to: "/conversas",  label: "Conversas",  icon: MessageCircle,  badge: unreadConvs  || undefined },
-    { to: "/pedidos",    label: "Pedidos",    icon: ClipboardList,  badge: newOrdersCount || undefined },
-    { to: "/financeiro", label: "Financeiro", icon: Wallet },
-    { to: "/produtos",   label: "Produtos",   icon: UtensilsCrossed },
-    { to: "/marketing",  label: "Marketing",  icon: Megaphone },
-  ];
+    { to: "/dashboard",  label: "Dashboard",  icon: LayoutDashboard, feature: "dashboard" },
+    { to: "/conversas",  label: "Conversas",  icon: MessageCircle,  badge: unreadConvs  || undefined, feature: "conversas" },
+    { to: "/pedidos",    label: "Pedidos",    icon: ClipboardList,  badge: newOrdersCount || undefined, feature: "pedidos" },
+    { to: "/financeiro", label: "Financeiro", icon: Wallet, feature: "financeiro" },
+    { to: "/produtos",   label: "Produtos",   icon: UtensilsCrossed, feature: "produtos" },
+    { to: "/marketing",  label: "Marketing",  icon: Megaphone, feature: "marketing" },
+  ].filter((item) => features.length === 0 || features.includes(item.feature));
 
   return (
     <aside className="w-[240px] border-r border-border bg-sidebar flex flex-col shrink-0 h-screen lg:sticky lg:top-0">
@@ -129,9 +131,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
               <p className="text-[10px] text-muted-foreground truncate">{userPlan}</p>
             )}
           </div>
-          <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            type="button"
+            onClick={() => logout.mutate()}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             <LogOut className="size-4" />
-          </Link>
+          </button>
         </div>
       </div>
     </aside>

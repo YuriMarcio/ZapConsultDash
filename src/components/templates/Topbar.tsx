@@ -1,7 +1,15 @@
 import { Bell, Search, Moon, Sun, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export function Topbar({ title, onMenuClick }: { title?: string; onMenuClick?: () => void }) {
+export function Topbar({
+  title,
+  onMenuClick,
+  hideUnit,
+}: {
+  title?: string;
+  onMenuClick?: () => void;
+  hideUnit?: boolean;
+}) {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -28,10 +36,12 @@ export function Topbar({ title, onMenuClick }: { title?: string; onMenuClick?: (
         >
           <Menu className="size-4" />
         </button>
-        <div className="flex items-center px-2 sm:px-3 py-1.5 bg-muted rounded border border-border min-w-0">
-          <span className="text-xs text-muted-foreground mr-2 hidden sm:inline">Unidade:</span>
-          <span className="text-xs font-bold truncate">Jardins, SP</span>
-        </div>
+        {!hideUnit && (
+          <div className="flex items-center px-2 sm:px-3 py-1.5 bg-muted rounded border border-border min-w-0">
+            <span className="text-xs text-muted-foreground mr-2 hidden sm:inline">Unidade:</span>
+            <span className="text-xs font-bold truncate">Jardins, SP</span>
+          </div>
+        )}
         {title && <span className="text-sm text-muted-foreground hidden md:inline">/ {title}</span>}
       </div>
       <div className="flex items-center gap-2 sm:gap-3">

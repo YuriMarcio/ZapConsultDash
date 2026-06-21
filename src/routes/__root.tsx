@@ -13,6 +13,13 @@ import { tokenStore } from "@/api/client";
 import appCss from "../styles.css?url";
 
 const PUBLIC_ROUTES = ["/login", "/cadastro", "/recuperar"];
+const ADMIN_PREFIX = "/admin";
+
+// Rotas que só existem em planos com a feature correspondente liberada.
+const FEATURE_ROUTES: Record<string, string> = {
+  "/financeiro": "financeiro",
+  "/automacao": "automacao",
+};
 
 function NotFoundComponent() {
   return (
@@ -81,8 +88,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     if (!isPublic && !token) {
       throw redirect({ to: "/login" });
     }
+
+    // Tenant_id is null for super_admin — the role alone decides where each
+    // persona lands. Admin SINAL never sees the lojista dashboard and vice-versa.
+    const role = tokenStore.getUser()?.role;
+    const isAdminRoute = location.pathname.startsWith(ADMIN_PREFIX);
+
     if (location.pathname === "/login" && token) {
-      throw redirect({ to: "/dashboard" });
+      throw redirect({ to: role === "super_admin" ? "/admin" : "/dashboard" });
+    }
+    if (!isPublic && token) {
+      if (isAdminRoute && role !== "super_admin") {
+        throw redirect({ to: "/dashboard" });
+      }
+      if (!isAdminRoute && role === "super_admin") {
+        throw redirect({ to: "/admin" });
+      }
+
+      const requiredFeature = Object.entries(FEATURE_ROUTES).find(([prefix]) =>
+        location.pathname.startsWith(prefix),
+      )?.[1];
+      if (requiredFeature && !tokenStore.getUser()?.features?.includes(requiredFeature)) {
+        throw redirect({ to: "/dashboard" });
+      }
     }
   },
   head: () => ({

@@ -22,6 +22,12 @@ import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AutomacaoRouteImport } from './routes/automacao'
 import { Route as AjustesRouteImport } from './routes/ajustes'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminPlansRouteImport } from './routes/admin.plans'
+import { Route as AdminInstancesRouteImport } from './routes/admin.instances'
+import { Route as AdminClientsRouteImport } from './routes/admin.clients'
+import { Route as AdminClientsClientIdRouteImport } from './routes/admin.clients.$clientId'
 
 const RecuperarRoute = RecuperarRouteImport.update({
   id: '/recuperar',
@@ -88,6 +94,36 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPlansRoute = AdminPlansRouteImport.update({
+  id: '/admin/plans',
+  path: '/admin/plans',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminInstancesRoute = AdminInstancesRouteImport.update({
+  id: '/admin/instances',
+  path: '/admin/instances',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminClientsRoute = AdminClientsRouteImport.update({
+  id: '/admin/clients',
+  path: '/admin/clients',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminClientsClientIdRoute = AdminClientsClientIdRouteImport.update({
+  id: '/$clientId',
+  path: '/$clientId',
+  getParentRoute: () => AdminClientsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +139,12 @@ export interface FileRoutesByFullPath {
   '/produtos': typeof ProdutosRoute
   '/promocoes': typeof PromocoesRoute
   '/recuperar': typeof RecuperarRoute
+  '/admin/clients': typeof AdminClientsRouteWithChildren
+  '/admin/instances': typeof AdminInstancesRoute
+  '/admin/plans': typeof AdminPlansRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/clients/$clientId': typeof AdminClientsClientIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,6 +160,12 @@ export interface FileRoutesByTo {
   '/produtos': typeof ProdutosRoute
   '/promocoes': typeof PromocoesRoute
   '/recuperar': typeof RecuperarRoute
+  '/admin/clients': typeof AdminClientsRouteWithChildren
+  '/admin/instances': typeof AdminInstancesRoute
+  '/admin/plans': typeof AdminPlansRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/clients/$clientId': typeof AdminClientsClientIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,6 +182,12 @@ export interface FileRoutesById {
   '/produtos': typeof ProdutosRoute
   '/promocoes': typeof PromocoesRoute
   '/recuperar': typeof RecuperarRoute
+  '/admin/clients': typeof AdminClientsRouteWithChildren
+  '/admin/instances': typeof AdminInstancesRoute
+  '/admin/plans': typeof AdminPlansRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/clients/$clientId': typeof AdminClientsClientIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +205,12 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/promocoes'
     | '/recuperar'
+    | '/admin/clients'
+    | '/admin/instances'
+    | '/admin/plans'
+    | '/admin/settings'
+    | '/admin/'
+    | '/admin/clients/$clientId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,6 +226,12 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/promocoes'
     | '/recuperar'
+    | '/admin/clients'
+    | '/admin/instances'
+    | '/admin/plans'
+    | '/admin/settings'
+    | '/admin'
+    | '/admin/clients/$clientId'
   id:
     | '__root__'
     | '/'
@@ -181,6 +247,12 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/promocoes'
     | '/recuperar'
+    | '/admin/clients'
+    | '/admin/instances'
+    | '/admin/plans'
+    | '/admin/settings'
+    | '/admin/'
+    | '/admin/clients/$clientId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,6 +269,11 @@ export interface RootRouteChildren {
   ProdutosRoute: typeof ProdutosRoute
   PromocoesRoute: typeof PromocoesRoute
   RecuperarRoute: typeof RecuperarRoute
+  AdminClientsRoute: typeof AdminClientsRouteWithChildren
+  AdminInstancesRoute: typeof AdminInstancesRoute
+  AdminPlansRoute: typeof AdminPlansRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -292,8 +369,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/plans': {
+      id: '/admin/plans'
+      path: '/admin/plans'
+      fullPath: '/admin/plans'
+      preLoaderRoute: typeof AdminPlansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/instances': {
+      id: '/admin/instances'
+      path: '/admin/instances'
+      fullPath: '/admin/instances'
+      preLoaderRoute: typeof AdminInstancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/clients': {
+      id: '/admin/clients'
+      path: '/admin/clients'
+      fullPath: '/admin/clients'
+      preLoaderRoute: typeof AdminClientsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/clients/$clientId': {
+      id: '/admin/clients/$clientId'
+      path: '/$clientId'
+      fullPath: '/admin/clients/$clientId'
+      preLoaderRoute: typeof AdminClientsClientIdRouteImport
+      parentRoute: typeof AdminClientsRoute
+    }
   }
 }
+
+interface AdminClientsRouteChildren {
+  AdminClientsClientIdRoute: typeof AdminClientsClientIdRoute
+}
+
+const AdminClientsRouteChildren: AdminClientsRouteChildren = {
+  AdminClientsClientIdRoute: AdminClientsClientIdRoute,
+}
+
+const AdminClientsRouteWithChildren = AdminClientsRoute._addFileChildren(
+  AdminClientsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -309,6 +440,11 @@ const rootRouteChildren: RootRouteChildren = {
   ProdutosRoute: ProdutosRoute,
   PromocoesRoute: PromocoesRoute,
   RecuperarRoute: RecuperarRoute,
+  AdminClientsRoute: AdminClientsRouteWithChildren,
+  AdminInstancesRoute: AdminInstancesRoute,
+  AdminPlansRoute: AdminPlansRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

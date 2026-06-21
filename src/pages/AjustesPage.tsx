@@ -3,6 +3,8 @@ import { IntegrationsSection } from "@/components/organisms/IntegrationsSection"
 import { StoreSettingsForm } from "@/components/organisms/StoreSettingsForm";
 import { TeamSection } from "@/components/organisms/TeamSection";
 import { useTenantPlan } from "@/api/services/tenant.service";
+import { useMe } from "@/api/services/auth.service";
+import { Lock } from "lucide-react";
 
 const DEFAULT_FEATURES = [
   "WhatsApp ilimitado",
@@ -20,6 +22,9 @@ export function AjustesPage() {
   const { data: planData } = useTenantPlan();
   const plan = planData?.data;
 
+  const { data: me } = useMe();
+  const hasExternalIntegrations = (me?.data?.features ?? []).includes("integracoes_externas");
+
   return (
     <AppLayout title="Ajustes">
       <div className="mb-8">
@@ -29,7 +34,21 @@ export function AjustesPage() {
         <h1 className="text-2xl font-bold tracking-tight">Ajustes da Loja</h1>
       </div>
 
-      <IntegrationsSection />
+      {hasExternalIntegrations ? (
+        <IntegrationsSection />
+      ) : (
+        <section className="bg-card border border-border rounded-xl p-5 sm:p-6 ring-1 ring-black/5 mb-6 flex items-center gap-4">
+          <div className="size-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+            <Lock className="size-4 text-muted-foreground" />
+          </div>
+          <div>
+            <h2 className="font-bold tracking-tight">Marketplaces & Cardápio Digital</h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Integração com iFood, Rappi, Uber Eats e mais disponível no plano Consultoria.
+            </p>
+          </div>
+        </section>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
